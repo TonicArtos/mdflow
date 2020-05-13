@@ -13,6 +13,7 @@ dependencies:
 
   logger: ^0.9.1
 
+  animations: ^1.0.0
 
 dev_dependencies:
   flutter_test:
