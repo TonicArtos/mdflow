@@ -80,10 +80,10 @@ class MyHomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.view_compact),
             tooltip: 'Configure display',
-            onPressed: () => onConfigureDisplay(context),
+            onPressed: () => onAction(context, PopupAction.configure),
           ),
           PopupMenuButton<PopupAction>(
-            onSelected: (v) => onPopupAction(context, v),
+            onSelected: (v) => onAction(context, v),
             itemBuilder: (c) => [
               PopupMenuItem(
                 value: PopupAction.about,
@@ -93,27 +93,16 @@ class MyHomePage extends StatelessWidget {
           )
         ];
       case ActionLevel.view:
-        return <Widget>[
-          IconButton(
-            icon: Icon(Icons.view_compact),
-            tooltip: 'Configure display',
-            onPressed: () => onConfigureDisplay(context),
-          ),
-          IconButton(
-            icon: Icon(Icons.view_compact),
-            tooltip: 'Configure display',
-            onPressed: () => onConfigureDisplay(context),
-          ),
-        ];
+        return <Widget>[];
       case ActionLevel.composite:
         return <Widget>[
           IconButton(
             icon: Icon(Icons.view_compact),
             tooltip: 'Configure display',
-            onPressed: () => onConfigureDisplay(context),
+            onPressed: () => onAction(context, PopupAction.configure),
           ),
           PopupMenuButton<PopupAction>(
-            onSelected: (v) => onPopupAction(context, v),
+            onSelected: (v) => onAction(context, v),
             itemBuilder: (c) => [
               PopupMenuItem(
                 value: PopupAction.about,
@@ -140,30 +129,33 @@ class MyHomePage extends StatelessWidget {
           middle: Text('Master Detail Flow Demo'),
           trailing: CupertinoButton(
             child: Icon(CupertinoIcons.ellipsis),
-            onPressed: () {
-              showCupertinoModalPopup(
+            onPressed: () async {
+              onAction(
+                context,
+                await showCupertinoModalPopup(
                   context: context,
                   builder: (context) {
                     return CupertinoActionSheet(
                       title: Text('Options'),
-                      cancelButton: CupertinoButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+                      cancelButton: CupertinoActionSheetAction(
+                        child: const Text('Cancel'),
+                        isDefaultAction: true,
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                       actions: <Widget>[
-                        CupertinoButton(
-                          child: Text('Configure'),
-                          onPressed: () {},
+                        CupertinoActionSheetAction(
+                          child: const Text('Configure'),
+                          onPressed: () => Navigator.of(context).pop(PopupAction.configure),
                         ),
-                        CupertinoButton(
-                          child: Text('About'),
-                          onPressed: () {},
+                        CupertinoActionSheetAction(
+                          child: const Text('About'),
+                          onPressed: () => Navigator.of(context).pop(PopupAction.about),
                         ),
                       ],
                     );
-                  });
+                  },
+                ),
+              );
             },
           ),
         ),
@@ -252,6 +244,7 @@ class MyHomePage extends StatelessWidget {
     final Object arguments,
     DetailViewConfiguration config,
   ) {
+
     if (arguments is DetailPageArguments) {
       if (config.controller == null) {
         return Scaffold(
@@ -393,9 +386,12 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  void onPopupAction(BuildContext context, PopupAction v) {
+  void onAction(BuildContext context, PopupAction v) {
     var flutterLogo = FlutterLogo();
     switch (v) {
+      case PopupAction.configure:
+        onConfigureDisplay(context);
+        break;
       case PopupAction.about:
         showAboutDialog(
           context: context,
@@ -430,7 +426,7 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-enum PopupAction { about }
+enum PopupAction { about, configure }
 
 class DetailPageArguments {
   DetailPageArguments(this.id);

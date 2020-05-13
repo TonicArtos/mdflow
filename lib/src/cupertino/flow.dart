@@ -81,8 +81,6 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
                 builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                   if (!isDefault) {
                     Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
-                  } else {
-                    _cachedDetailArguments = v;
                   }
                 }),
               ),
@@ -93,18 +91,21 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
                 builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                   if (!isDefault) {
                     Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
-                  } else {
-                    _cachedDetailArguments = v;
                   }
                 }),
               ),
               CupertinoPageRoute(
                 builder: (c) => WillPopScope(
-                  child: widget.detailPageBuilder(c, _cachedDetailArguments,
-                      _NestedConfiguration(onBack: () {
-                    focus = _Focus.master;
-                    Navigator.of(c).pop();
-                  })),
+                  child: widget.detailPageBuilder(
+                    c,
+                    _cachedDetailArguments,
+                    _NestedConfiguration(
+                      onBack: () {
+                        focus = _Focus.master;
+                        Navigator.of(c).pop();
+                      },
+                    ),
+                  ),
                   onWillPop: () async {
                     // No need for setState() as rebuild happens on navigation pop.
                     focus = _Focus.master;
@@ -125,8 +126,6 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
               builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                 if (!isDefault) {
                   Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
-                } else {
-                  _cachedDetailArguments = v;
                 }
               }),
             );
@@ -137,11 +136,16 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
             _cachedDetailArguments = settings.arguments;
             return CupertinoPageRoute(
               builder: (c) => WillPopScope(
-                child: widget.detailPageBuilder(c, _cachedDetailArguments,
-                    _NestedConfiguration(onBack: () {
-                  focus = _Focus.master;
-                  Navigator.of(c).pop();
-                })),
+                child: widget.detailPageBuilder(
+                  c,
+                  _cachedDetailArguments,
+                  _NestedConfiguration(
+                    onBack: () {
+                      focus = _Focus.master;
+                      Navigator.of(c).pop();
+                    },
+                  ),
+                ),
                 onWillPop: () async {
                   // No need for setState() as rebuild happens on navigation pop.
                   focus = _Focus.master;

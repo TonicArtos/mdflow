@@ -83,8 +83,11 @@ class MasterDetailScaffold extends StatelessWidget {
                 children: <Widget>[
                   ConstrainedBox(
                     constraints: BoxConstraints.tightFor(width: _masterViewWidth),
-                    child: ButtonBar(
-                      children: _actionBuilder(context, ActionLevel.view),
+                    child: IconTheme(
+                      data: Theme.of(context).primaryIconTheme,
+                      child: ButtonBar(
+                        children: _actionBuilder(context, ActionLevel.view),
+                      ),
                     ),
                   )
                 ],

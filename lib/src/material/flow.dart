@@ -192,15 +192,16 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
               MaterialPageRoute(
                 builder: (c) => WillPopScope(
                   child: widget.detailPageBuilder(
-                      c,
-                      _cachedDetailArguments,
-                      _NestedConfiguration(
-                        icon: Icons.arrow_back,
-                        onBack: () {
-                          focus = _Focus.master;
-                          Navigator.of(c).pop();
-                        },
-                      )),
+                    c,
+                    _cachedDetailArguments,
+                    _NestedConfiguration(
+                      icon: Icons.arrow_back,
+                      onBack: () {
+                        focus = _Focus.master;
+                        Navigator.of(c).pop();
+                      },
+                    ),
+                  ),
                   onWillPop: () async {
                     // No need for setState() as rebuild happens on navigation pop.
                     focus = _Focus.master;
@@ -229,15 +230,16 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
             return MaterialPageRoute(
               builder: (c) => WillPopScope(
                 child: widget.detailPageBuilder(
-                    c,
-                    _cachedDetailArguments,
-                    _NestedConfiguration(
-                      icon: Icons.arrow_back,
-                      onBack: () {
-                        focus = _Focus.master;
-                        Navigator.of(c).pop();
-                      },
-                    )),
+                  c,
+                  _cachedDetailArguments,
+                  _NestedConfiguration(
+                    icon: Icons.arrow_back,
+                    onBack: () {
+                      focus = _Focus.master;
+                      Navigator.of(c).pop();
+                    },
+                  ),
+                ),
                 onWillPop: () async {
                   // No need for setState() as rebuild happens on navigation pop.
                   focus = _Focus.master;
