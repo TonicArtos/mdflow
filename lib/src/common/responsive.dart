@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-part of mdflow;
+import 'package:flutter/widgets.dart';
 
 class Responsive extends StatelessWidget {
   static const int _breakpointForLargeDisplay = 840;
@@ -15,6 +15,9 @@ class Responsive extends StatelessWidget {
   static const int _breakpointForGutterSize = 720;
   static const double _smallGutter = 12;
   static const double _largeGutter = 24;
+
+  static double getGutterSize(BuildContext context) =>
+      MediaQuery.of(context).size.width >= _breakpointForGutterSize ? _largeGutter : _smallGutter;
 
   Responsive(
     this.small, {

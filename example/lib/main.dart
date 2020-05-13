@@ -14,8 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mdflow/mdflow.dart';
+import 'package:mdflow/cupertino.dart';
+import 'package:mdflow/material.dart';
 
 void main() {
   runApp(MyApp());
@@ -42,23 +45,37 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<MdFlowConfiguration>(
       valueListenable: configuration,
       builder: (context, configuration, child) {
-        return MasterDetailFlow(
-          title: Text('Master Detail Flow Demo'),
-          displayConfiguration: configuration,
-          actionBuilder: _actionBuilder,
-          masterViewBuilder: _buildMasterPage,
-          detailPageBuilder: _buildDetailPage,
-        );
+        switch (styleChoice(
+          Theme.of(context).platform,
+          configuration.style,
+          kIsWeb,
+        )) {
+          case LayoutStyle.cupertino:
+            return CupertinoMasterDetailFlow(
+              displayMode: configuration.mode,
+              masterPageBuilder: _buildCupertinoMasterPage,
+              detailPageBuilder: _buildCupertinoDetailPage,
+            );
+          case LayoutStyle.material:
+          default:
+            return MasterDetailFlow(
+              title: Text('Master Detail Flow Demo'),
+              displayMode: configuration.mode,
+              actionBuilder: _actionBuilder,
+              masterViewBuilder: _buildMasterPage,
+              detailPageBuilder: _buildDetailPage,
+            );
+        }
       },
     );
   }
 
   List<Widget> _actionBuilder(context, mode) {
     switch (mode) {
-      case MdFlowActionLevel.top:
+      case ActionLevel.top:
         return <Widget>[
           IconButton(
             icon: Icon(Icons.view_compact),
@@ -75,9 +92,20 @@ class MyHomePage extends StatelessWidget {
             ],
           )
         ];
-      case MdFlowActionLevel.view:
-        return <Widget>[];
-      case MdFlowActionLevel.composite:
+      case ActionLevel.view:
+        return <Widget>[
+          IconButton(
+            icon: Icon(Icons.view_compact),
+            tooltip: 'Configure display',
+            onPressed: () => onConfigureDisplay(context),
+          ),
+          IconButton(
+            icon: Icon(Icons.view_compact),
+            tooltip: 'Configure display',
+            onPressed: () => onConfigureDisplay(context),
+          ),
+        ];
+      case ActionLevel.composite:
         return <Widget>[
           IconButton(
             icon: Icon(Icons.view_compact),
@@ -98,6 +126,80 @@ class MyHomePage extends StatelessWidget {
     return <Widget>[];
   }
 
+  Widget _buildCupertinoMasterPage(
+    BuildContext context,
+    bool isLateral,
+    OpenDetailPageCallback openDetailPage,
+  ) {
+    selectedId.value ??= 0;
+    openDetailPage(DetailPageArguments(0), isDefault: true);
+    return ValueListenableBuilder<int>(
+      valueListenable: selectedId,
+      builder: (context, value, _) => CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text('Master Detail Flow Demo'),
+          trailing: CupertinoButton(
+            child: Icon(CupertinoIcons.ellipsis),
+            onPressed: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) {
+                    return CupertinoActionSheet(
+                      title: Text('Options'),
+                      cancelButton: CupertinoButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      actions: <Widget>[
+                        CupertinoButton(
+                          child: Text('Configure'),
+                          onPressed: () {},
+                        ),
+                        CupertinoButton(
+                          child: Text('About'),
+                          onPressed: () {},
+                        ),
+                      ],
+                    );
+                  });
+            },
+          ),
+        ),
+        child: Material(
+          child: Responsive(
+            (context) => _buildListView(openDetailPage, isLateral, value),
+            medium: (context) => _buildGridView(openDetailPage, isLateral, value),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCupertinoDetailPage(
+    final BuildContext context,
+    final Object arguments,
+    final DetailViewConfiguration config,
+  ) {
+    if (arguments is DetailPageArguments) {
+      return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text('Item ${arguments.id}'),
+          leading: config.leading,
+          automaticallyImplyLeading: config.implyLeading,
+        ),
+        child: Center(
+          child: Text('Item ${arguments.id}'),
+        ),
+      );
+    } else {
+      throw Exception('Arguments not given. '
+          'argType = ${arguments.runtimeType}. '
+          'arguments = $arguments');
+    }
+  }
+
   Widget _buildMasterPage(
     BuildContext context,
     bool isLateral,
@@ -107,7 +209,7 @@ class MyHomePage extends StatelessWidget {
     openDetailPage(DetailPageArguments(0), isDefault: true);
     return ValueListenableBuilder<int>(
       valueListenable: selectedId,
-      builder: (context, value, child) => Responsive(
+      builder: (context, value, _) => Responsive(
         (context) => _buildListView(openDetailPage, isLateral, value),
         medium: (context) => _buildGridView(openDetailPage, isLateral, value),
       ),
@@ -147,26 +249,39 @@ class MyHomePage extends StatelessWidget {
 
   Widget _buildDetailPage(
     BuildContext context,
-    final Object arguments, {
+    final Object arguments,
     DetailViewConfiguration config,
-  }) {
+  ) {
     if (arguments is DetailPageArguments) {
-      return Scaffold(
-        body: CustomScrollView(
-          controller: config.controller,
-          primary: config.controller == null,
-          slivers: <Widget>[
-            SliverAppBar(
-              title: Text('Item ${arguments.id}'),
-              leading: config.leading,
-              automaticallyImplyLeading: config.implyLeading,
-            ),
-            SliverToBoxAdapter(
-              child: Responsive((c) => Container()),
-            ),
-          ],
-        ),
-      );
+      if (config.controller == null) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Item ${arguments.id}'),
+            leading: config.leading,
+            automaticallyImplyLeading: config.implyLeading,
+          ),
+          body: SingleChildScrollView(
+            child: Responsive((c) => Container()),
+          ),
+        );
+      } else {
+        return Scaffold(
+          body: CustomScrollView(
+            controller: config.controller,
+            primary: config.controller == null,
+            slivers: <Widget>[
+              SliverAppBar(
+                title: Text('Item ${arguments.id}'),
+                leading: config.leading,
+                automaticallyImplyLeading: config.implyLeading,
+              ),
+              SliverToBoxAdapter(
+                child: Responsive((c) => Container()),
+              ),
+            ],
+          ),
+        );
+      }
     } else {
       throw Exception('Arguments not given. '
           'argType = ${arguments.runtimeType}. '
@@ -222,18 +337,18 @@ class MyHomePage extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: ToggleButtons(
                       borderRadius: BorderRadius.circular(16.0),
-                      children: MdFlowLayoutStyle.values
+                      children: LayoutStylePreference.values
                           .map((i) => Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Text(i.buttonText),
+                                child: Text(i.text),
                               ))
                           .toList(growable: false),
-                      isSelected: MdFlowLayoutStyle.values
+                      isSelected: LayoutStylePreference.values
                           .map((i) => i.index == configuration.value.style.index)
                           .toList(growable: false),
                       onPressed: (i) {
                         configuration.value =
-                            configuration.value.copyWith(style: MdFlowLayoutStyle.values[i]);
+                            configuration.value.copyWith(style: LayoutStylePreference.values[i]);
                       },
                     ),
                   ),
@@ -250,18 +365,18 @@ class MyHomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ToggleButtons(
                     borderRadius: BorderRadius.circular(16.0),
-                    children: MdFlowLayoutMode.values
+                    children: LayoutMode.values
                         .map((i) => Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Text(i.buttonText),
+                              child: Text(i.text),
                             ))
                         .toList(growable: false),
-                    isSelected: MdFlowLayoutMode.values
+                    isSelected: LayoutMode.values
                         .map((i) => i.index == configuration.value.mode.index)
                         .toList(growable: false),
                     onPressed: (i) {
                       configuration.value =
-                          configuration.value.copyWith(mode: MdFlowLayoutMode.values[i]);
+                          configuration.value.copyWith(mode: LayoutMode.values[i]);
                     },
                   ),
                 ),
@@ -356,13 +471,13 @@ TextSpan get _configText => TextSpan(
       ],
     );
 
-extension ExplainMdFlowLayoutStyle on MdFlowLayoutStyle {
+extension ExplainMdFlowLayoutStyle on LayoutStylePreference {
   TextSpan get explain {
     switch (this) {
-      case MdFlowLayoutStyle.materialPreferred:
+      case LayoutStylePreference.materialPreferred:
         return TextSpan(
           children: [
-            'MdFlowLayoutStyle.materialPreferred '.bold,
+            'LayoutStylePreference.materialPreferred '.bold,
             'is the default configuration. This behaviour implements the '.span,
             'Material '.em,
             'visual style on all platforms except '.span,
@@ -372,28 +487,28 @@ extension ExplainMdFlowLayoutStyle on MdFlowLayoutStyle {
             '.'.span,
           ],
         );
-      case MdFlowLayoutStyle.material:
+      case LayoutStylePreference.material:
         return TextSpan(
           children: [
-            'MdFlowLayoutStyle.material '.bold,
+            'LayoutStylePreference.material '.bold,
             'forces the package to use the '.span,
             'Material '.em,
             'visual elements and layout configuration on all platforms.'.span,
           ],
         );
-      case MdFlowLayoutStyle.cupertino:
+      case LayoutStylePreference.cupertino:
         return TextSpan(
           children: [
-            'MdFlowLayoutStyle.cupertino '.bold,
+            'LayoutStylePreference.cupertino '.bold,
             'forces the package to use the '.span,
             'Cupertino '.em,
             'visual elements and layout configuration on all platforms.'.span,
           ],
         );
-      case MdFlowLayoutStyle.cupertinoPreferred:
+      case LayoutStylePreference.cupertinoPreferred:
         return TextSpan(
           children: [
-            'MdFlowLayoutStyle.cupertinoPreferred '.bold,
+            'LayoutStylePreference.cupertinoPreferred '.bold,
             'sets all plaforms to use the '.span,
             'Cupertino '.em,
             'visual style, except the '.span,
@@ -409,30 +524,30 @@ extension ExplainMdFlowLayoutStyle on MdFlowLayoutStyle {
   }
 }
 
-extension ExplainMdFlowLayoutMode on MdFlowLayoutMode {
+extension ExplainMdFlowLayoutMode on LayoutMode {
   TextSpan get explain {
     switch (this) {
-      case MdFlowLayoutMode.auto:
+      case LayoutMode.auto:
         return TextSpan(
           children: [
-            'MdFlowLayoutMode.auto '.bold,
+            'LayoutMode.auto '.bold,
             'is the default configuration. In this mode the package will choose whether to use a '
                     'single panel UI with nested navigation, or a two panel UI with lateral '
                     'navigation.'
                 .span,
           ],
         );
-      case MdFlowLayoutMode.narrow:
+      case LayoutMode.narrow:
         return TextSpan(
           children: [
-            'MdFlowLayoutMode.narrow '.bold,
+            'LayoutMode.narrow '.bold,
             'forces the package to use a single panel UI with nested navigation.'.span,
           ],
         );
-      case MdFlowLayoutMode.wide:
+      case LayoutMode.wide:
         return TextSpan(
           children: [
-            'MdFlowLayoutMode.wide '.bold,
+            'LayoutMode.wide '.bold,
             'forces the package to use a two panel UI with lateral navigation.'.span,
           ],
         );

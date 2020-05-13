@@ -6,47 +6,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-part of mdflow;
-
-typedef DetailPageBuilder = Widget Function(
-  BuildContext context,
-  Object arguments, {
-  DetailViewConfiguration config,
-});
-
-typedef OpenDetailPageCallback = void Function(Object arguments, {bool isDefault});
-
-typedef MasterViewBuilder = Widget Function(
-  BuildContext context,
-  bool isLateral,
-  OpenDetailPageCallback openDetailPage,
-);
-
-typedef ActionBuilder = List<Widget> Function(
-  BuildContext context,
-  MdFlowActionLevel actionLevel,
-);
-
-abstract class DetailViewConfiguration {
-  ScrollController get controller;
-
-  bool get implyLeading;
-
-  Widget get leading;
-}
+part of material_mdflow;
 
 class MdFlowConfiguration {
   const MdFlowConfiguration({
-    this.mode = MdFlowLayoutMode.auto,
-    this.style = MdFlowLayoutStyle.materialPreferred,
+    this.mode = LayoutMode.auto,
+    this.style = LayoutStylePreference.materialPreferred,
   });
 
-  final MdFlowLayoutMode mode;
-  final MdFlowLayoutStyle style;
+  final LayoutMode mode;
+  final LayoutStylePreference style;
 
   MdFlowConfiguration copyWith({
-    MdFlowLayoutMode mode,
-    MdFlowLayoutStyle style,
+    LayoutMode mode,
+    LayoutStylePreference style,
   }) =>
       MdFlowConfiguration(
         mode: mode ?? this.mode,
@@ -54,52 +27,13 @@ class MdFlowConfiguration {
       );
 }
 
-enum MdFlowLayoutMode { auto, narrow, wide }
-enum MdFlowLayoutStyle { materialPreferred, material, cupertino, cupertinoPreferred }
-enum MdFlowActionLevel { top, view, composite }
-
-extension MdFlowLayoutStyleStringer on MdFlowLayoutStyle {
-  String get buttonText {
-    switch (this) {
-      case MdFlowLayoutStyle.materialPreferred:
-        return 'Material Preferred';
-      case MdFlowLayoutStyle.material:
-        return 'Material';
-      case MdFlowLayoutStyle.cupertino:
-        return 'Cupertino';
-      case MdFlowLayoutStyle.cupertinoPreferred:
-        return 'Cupertino Preferred';
-      default:
-        throw UnknownLayoutStyleException(this);
-    }
-  }
-}
-
-extension MdFlowLayoutModeStringer on MdFlowLayoutMode {
-  String get buttonText {
-    switch (this) {
-      case MdFlowLayoutMode.auto:
-        return 'Auto';
-      case MdFlowLayoutMode.narrow:
-        return 'Narrow';
-      case MdFlowLayoutMode.wide:
-        return 'Wide';
-      default:
-        throw UnknownLayoutModeException(this);
-    }
-  }
-}
-
 /// A Master Detail Flow widget. Depending on screen width it builds either a lateral or nested
 /// navigation flow between a master view and a detail page.
+/// bloc pattern.
 ///
 /// If focus is on detail view, then switching to nested
 /// navigation will populate the navigation history with the master page and the detail page on
 /// top. Otherwise the focus is on the master view and just the master page is shown.
-///
-/// When swapping to lateral navigation, the detail page will always be added. The route settings
-/// can be used to reconstruct the detail page, or some other method can be used, such as the
-/// bloc pattern.
 class MasterDetailFlow extends StatefulWidget {
   static const String navMaster = 'master';
   static const String navDetail = 'detail';
@@ -114,17 +48,18 @@ class MasterDetailFlow extends StatefulWidget {
     this.autoImplyLeading = true,
     this.centerTitle,
     this.floatingActionButton,
-    this.floatingActionButtonGutterWidth,
+    this.detailPageFABGutterWidth,
+    this.detailPageFABlessGutterWidth,
     this.floatingActionButtonLocation,
     this.floatingActionButtonMasterPageLocation,
     this.leading,
     this.masterPageBuilder,
     this.masterViewWidth,
     this.title,
-    MdFlowConfiguration displayConfiguration,
+    LayoutMode displayMode,
   })  : assert(masterViewBuilder != null),
         assert(detailPageBuilder != null),
-        this.displayConfiguration = displayConfiguration ?? const MdFlowConfiguration(),
+        this.displayMode = displayMode ?? LayoutMode.auto,
         super(key: key);
 
   /// Builder for the master view for lateral navigation.
@@ -153,7 +88,10 @@ class MasterDetailFlow extends StatefulWidget {
   final double masterViewWidth;
 
   /// Override the width of the floating action button gutter in the lateral UI.
-  final double floatingActionButtonGutterWidth;
+  final double detailPageFABGutterWidth;
+
+  /// Override the width of the gutter when there is no floating action button.
+  final double detailPageFABlessGutterWidth;
 
   /// Add a floating action button to the lateral UI. If no [masterPageBuilder] is supplied, this
   /// floating action button is also used on the nested master page.
@@ -184,10 +122,10 @@ class MasterDetailFlow extends StatefulWidget {
 
   /// Build actions for the lateral UI, and potentially the master page in the nested UI.
   ///
-  /// If level is [MdFlowActionLevel.top] then the actions are for
-  /// the entire lateral UI page. If level is [MdFlowActionLevel.view] the actions are for the master
+  /// If level is [ActionLevel.top] then the actions are for
+  /// the entire lateral UI page. If level is [ActionLevel.view] the actions are for the master
   /// view toolbar. Finally, if the [AppBar] for the master page for the nested UI is being built
-  /// by [MasterDetailFlow], then [MdFlowActionLevel.composite] indicates the actions are for the
+  /// by [MasterDetailFlow], then [ActionLevel.composite] indicates the actions are for the
   /// nested master page.
   final ActionBuilder actionBuilder;
 
@@ -204,7 +142,7 @@ class MasterDetailFlow extends StatefulWidget {
   final FloatingActionButtonLocation floatingActionButtonMasterPageLocation;
 
   /// Forces display mode and style.
-  final MdFlowConfiguration displayConfiguration;
+  final LayoutMode displayMode;
 
   @override
   _MasterDetailFlowState createState() => _MasterDetailFlowState();
@@ -218,57 +156,55 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.displayConfiguration.mode) {
-      case MdFlowLayoutMode.narrow:
-        return buildSmall(context);
-      case MdFlowLayoutMode.wide:
-        return buildLarge(context);
-      case MdFlowLayoutMode.auto:
+    switch (widget.displayMode) {
+      case LayoutMode.narrow:
+        return buildNestedUI(context);
+      case LayoutMode.wide:
+        return buildLateralUI(context);
+      case LayoutMode.auto:
         return Responsive(
-          buildSmall,
-          large: buildLarge,
+          buildNestedUI,
+          large: buildLateralUI,
         );
       default:
-        throw UnknownLayoutModeException(widget.displayConfiguration.mode);
+        throw UnknownLayoutModeException(widget.displayMode);
     }
   }
 
-  Widget buildSmall(BuildContext context) {
+  Widget buildNestedUI(BuildContext context) {
     return Navigator(
       initialRoute: 'initial',
       onGenerateInitialRoutes: (navigator, initialRoute) {
         switch (focus) {
           case _Focus.master:
             return <Route>[
-              _choosePageRoute(
-                Theme.of(context).platform,
-                widget.displayConfiguration,
-                widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
+              MaterialPageRoute(
+                builder:
+                    widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
               ),
             ];
           default:
             return <Route>[
-              _choosePageRoute(
-                Theme.of(context).platform,
-                widget.displayConfiguration,
-                widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
+              MaterialPageRoute(
+                builder:
+                    widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
               ),
-              _choosePageRoute(
-                Theme.of(context).platform,
-                widget.displayConfiguration,
-                (c) => WillPopScope(
-                  child: widget.detailPageBuilder(c, _cachedDetailArguments,
-                      config: _NestedConfiguration(
-                        icon: _getBackArrowIcon(c),
+              MaterialPageRoute(
+                builder: (c) => WillPopScope(
+                  child: widget.detailPageBuilder(
+                      c,
+                      _cachedDetailArguments,
+                      _NestedConfiguration(
+                        icon: Icons.arrow_back,
                         onBack: () {
                           focus = _Focus.master;
-                          c.navigation.pop();
+                          Navigator.of(c).pop();
                         },
                       )),
                   onWillPop: () async {
                     // No need for setState() as rebuild happens on navigation pop.
                     focus = _Focus.master;
-                    c.navigation.pop();
+                    Navigator.of(c).pop();
                     return false;
                   },
                 ),
@@ -281,32 +217,31 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
           case MasterDetailFlow.navMaster:
             // Matching state to navigation event.
             focus = _Focus.master;
-            return _choosePageRoute(
-              Theme.of(context).platform,
-              widget.displayConfiguration,
-              widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
+            return MaterialPageRoute(
+              builder:
+                  widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
             );
           case MasterDetailFlow.navDetail:
             // Matching state to navigation event.
             focus = _Focus.detail;
             // Cache detail page settings.
             _cachedDetailArguments = settings.arguments;
-            return _choosePageRoute(
-              Theme.of(context).platform,
-              widget.displayConfiguration,
-              (c) => WillPopScope(
-                child: widget.detailPageBuilder(c, _cachedDetailArguments,
-                    config: _NestedConfiguration(
-                      icon: _getBackArrowIcon(c),
+            return MaterialPageRoute(
+              builder: (c) => WillPopScope(
+                child: widget.detailPageBuilder(
+                    c,
+                    _cachedDetailArguments,
+                    _NestedConfiguration(
+                      icon: Icons.arrow_back,
                       onBack: () {
                         focus = _Focus.master;
-                        c.navigation.pop();
+                        Navigator.of(c).pop();
                       },
                     )),
                 onWillPop: () async {
                   // No need for setState() as rebuild happens on navigation pop.
                   focus = _Focus.master;
-                  c.navigation.pop();
+                  Navigator.of(c).pop();
                   return false;
                 },
               ),
@@ -318,16 +253,6 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
     );
   }
 
-  IconData _getBackArrowIcon(BuildContext c) {
-    switch (_styleChoice(Theme.of(c).platform, widget.displayConfiguration)) {
-      case _StyleChoice.cupertino:
-        return Icons.arrow_back_ios;
-      case _StyleChoice.material:
-      default:
-        return Icons.arrow_back;
-    }
-  }
-
   Widget _buildMasterPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -336,7 +261,7 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
         automaticallyImplyLeading: widget.autoImplyLeading,
         actions: widget.actionBuilder == null
             ? const <Widget>[]
-            : widget.actionBuilder(context, MdFlowActionLevel.composite),
+            : widget.actionBuilder(context, ActionLevel.composite),
         centerTitle: widget.centerTitle,
       ),
       body: widget.masterViewBuilder(
@@ -351,19 +276,19 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
     );
   }
 
-  Widget buildLarge(BuildContext context) {
+  Widget buildLateralUI(BuildContext context) {
     return MasterDetailScaffold(
       actionBuilder: widget.actionBuilder == null ? const <Widget>[] : widget.actionBuilder,
       autoImplyLeading: widget.autoImplyLeading,
       centerTitle: widget.centerTitle,
-      configuration: widget.displayConfiguration,
-      detailPageBuilder: (context, arguments, {config}) => widget.detailPageBuilder(
+      detailPageBuilder: (context, arguments, config) => widget.detailPageBuilder(
         context,
         arguments != null ? arguments : _cachedDetailArguments,
-        config: config,
+        config,
       ),
       floatingActionButton: widget.floatingActionButton,
-      floatingActionButtonGutterWidth: widget.floatingActionButtonGutterWidth,
+      detailPageFABlessGutterWidth: widget.detailPageFABlessGutterWidth,
+      detailPageFABGutterWidth: widget.detailPageFABGutterWidth,
       floatingActionButtonLocation: widget.floatingActionButtonLocation,
       initialArguments: _cachedDetailArguments,
       leading: widget.leading,
@@ -391,42 +316,3 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
 }
 
 enum _Focus { master, detail }
-
-extension _NavigationContext on BuildContext {
-  NavigatorState get navigation => Navigator.of(
-        this,
-        rootNavigator: false,
-        nullOk: false,
-      );
-}
-
-class _NestedConfiguration extends DetailViewConfiguration {
-  _NestedConfiguration({this.icon, this.onBack});
-
-  final void Function() onBack;
-  final IconData icon;
-  @override
-  ScrollController get controller => null;
-
-  @override
-  bool get implyLeading => true;
-
-  @override
-  Widget get leading => IconButton(
-        icon: Icon(icon),
-        onPressed: onBack,
-      );
-}
-
-class _EmbeddedConfiguration extends DetailViewConfiguration {
-  _EmbeddedConfiguration(this.controller);
-
-  @override
-  final ScrollController controller;
-
-  @override
-  bool get implyLeading => false;
-
-  @override
-  Widget get leading => null;
-}

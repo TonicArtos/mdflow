@@ -6,19 +6,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-library mdflow;
+library cupertino_mdflow;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-import 'package:mdflow/src/exceptions.dart';
+import 'package:mdflow/src/common/common.dart';
+import 'package:mdflow/src/common/layout_mode.dart';
+import 'package:mdflow/src/common/responsive.dart';
 
-part 'src/flow.dart';
+part 'cupertino/common.dart';
 
-part 'src/platform.dart';
+part 'cupertino/flow.dart';
 
-part 'src/responsive.dart';
+part 'cupertino/scaffold.dart';
 
-part 'src/scaffold.dart';
+part 'cupertino/transition.dart';
