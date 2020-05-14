@@ -61,7 +61,6 @@ class MasterDetailScaffold extends StatelessWidget {
   final double _detailPageFABlessGutterWidth;
   final double _detailPageFABGutterWidth;
   final double _masterViewWidth;
-  final ValueNotifier<Object> _defaultRequest = ValueNotifier(null);
   final ValueNotifier<Object> _detailArgument = ValueNotifier(null);
 
   @override
@@ -101,7 +100,7 @@ class MasterDetailScaffold extends StatelessWidget {
         SafeArea(
           child: Padding(
             padding: EdgeInsetsDirectional.only(
-              start: _masterViewWidth + _kCardElevation,
+              start: _masterViewWidth - _kCardElevation,
               end: _floatingActionButton == null
                   ? _detailPageFABlessGutterWidth
                   : _detailPageFABGutterWidth,
@@ -114,11 +113,11 @@ class MasterDetailScaffold extends StatelessWidget {
                       _FadeUpwardsPageTransition(child: child, animation: animation),
                   duration: Duration(milliseconds: 500),
                   child: Container(
-                    key: ValueKey(value ?? _initialArguments ?? _defaultRequest.value),
+                    key: ValueKey(value ?? _initialArguments),
                     constraints: BoxConstraints.expand(),
                     child: _DetailView(
                       builder: _detailPageBuilder,
-                      arguments: value ?? _initialArguments ?? _defaultRequest.value,
+                      arguments: value ?? _initialArguments,
                     ),
                   ),
                 );
@@ -138,7 +137,9 @@ class MasterDetailScaffold extends StatelessWidget {
       context,
       true,
       (v, {isDefault = false}) {
-        (isDefault ? _defaultRequest : _detailArgument).value = v;
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          _detailArgument.value = v;
+        });
       },
     );
     return ConstrainedBox(

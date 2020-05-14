@@ -9,6 +9,7 @@
 library material_mdflow;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:mdflow/src/common/common.dart';
 import 'package:mdflow/src/common/layout_mode.dart';
 import 'package:mdflow/src/common/layout_style.dart';

@@ -56,6 +56,7 @@ class MasterDetailFlow extends StatefulWidget {
     this.masterPageBuilder,
     this.masterViewWidth,
     this.title,
+    this.flexibleSpace,
     LayoutMode displayMode,
   })  : assert(masterViewBuilder != null),
         assert(detailPageBuilder != null),
@@ -119,6 +120,9 @@ class MasterDetailFlow extends StatefulWidget {
   ///
   /// See [AppBar.centerTitle].
   final bool centerTitle;
+
+  /// See [AppBar.flexibleSpace].
+  final Widget flexibleSpace;
 
   /// Build actions for the lateral UI, and potentially the master page in the nested UI.
   ///
@@ -265,6 +269,7 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
             ? const <Widget>[]
             : widget.actionBuilder(context, ActionLevel.composite),
         centerTitle: widget.centerTitle,
+        flexibleSpace: widget.flexibleSpace,
       ),
       body: widget.masterViewBuilder(
         context,
@@ -280,7 +285,9 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
 
   Widget buildLateralUI(BuildContext context) {
     return MasterDetailScaffold(
-      actionBuilder: widget.actionBuilder == null ? const <Widget>[] : widget.actionBuilder,
+      actionBuilder: widget.actionBuilder == null
+          ? (context, actionLevel) => const <Widget>[]
+          : widget.actionBuilder,
       autoImplyLeading: widget.autoImplyLeading,
       centerTitle: widget.centerTitle,
       detailPageBuilder: (context, arguments, config) => widget.detailPageBuilder(

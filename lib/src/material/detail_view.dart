@@ -41,6 +41,7 @@ class _DetailView extends StatelessWidget {
           return MouseRegion(
             // Workaround bug where things behind sheet still get mouse hover events.
             child: Card(
+              color: Theme.of(context).cardColor,
               elevation: _kCardElevation,
               clipBehavior: Clip.antiAlias,
               margin: EdgeInsets.fromLTRB(_kCardElevation, 0, _kCardElevation, 0),
