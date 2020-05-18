@@ -117,28 +117,37 @@ class DetailPageState extends State<DetailPage> {
         appBar: AppBar(
           title: _buildTitle(package, localisations, context),
         ),
-        body: Localizations.override(
-          locale: const Locale('en', 'US'),
-          context: context,
-          child: DefaultTextStyle(
-            style: Theme.of(context).textTheme.caption,
-            child: Scrollbar(
-              child: ListView(
-                padding: EdgeInsets.only(
-                  left: gutterSize,
-                  right: gutterSize,
-                  bottom: gutterSize,
-                ),
-                children: <Widget>[
-                  ..._licenses,
-                  if (!_loaded)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24.0),
-                      child: Center(
-                        child: CircularProgressIndicator(),
+        body: Center(
+          child: Material(
+            color: Theme.of(context).cardColor,
+            elevation: 4,
+            child: Container(
+              constraints: BoxConstraints.loose(Size.fromWidth(600)),
+              child: Localizations.override(
+                locale: const Locale('en', 'US'),
+                context: context,
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.caption,
+                  child: Scrollbar(
+                    child: ListView(
+                      padding: EdgeInsets.only(
+                        left: gutterSize,
+                        right: gutterSize,
+                        bottom: gutterSize,
                       ),
+                      children: <Widget>[
+                        ..._licenses,
+                        if (!_loaded)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                      ],
                     ),
-                ],
+                  ),
+                ),
               ),
             ),
           ),
