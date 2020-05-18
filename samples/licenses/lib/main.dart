@@ -203,7 +203,7 @@ class _LicensesPageState extends State<LicensesPage> {
       color: isSelected ? Theme.of(context).highlightColor : Theme.of(context).cardColor,
       child: ListTile(
         title: Text(packageName),
-        subtitle: Text('${bindings.length} registered licenses'),
+        subtitle: Text('${bindings.length} licenses'),
         selected: isSelected,
         onTap: () {
           selectedId.value = index;
