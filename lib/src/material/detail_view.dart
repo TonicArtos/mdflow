@@ -24,39 +24,30 @@ class _DetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_arguments == null) return Container();
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = context.mediaQuery().size.height;
     final minHeight = (screenHeight - kToolbarHeight) / screenHeight;
 
-    return GestureDetector(
-      onTap: () {
-        print('draggable');
-      },
-      behavior: HitTestBehavior.deferToChild,
-      child: DraggableScrollableSheet(
-        initialChildSize: minHeight,
-        minChildSize: minHeight,
-        maxChildSize: 1,
-        expand: false,
-        builder: (context, controller) {
-          return MouseRegion(
-            // Workaround bug where things behind sheet still get mouse hover events.
-            child: Card(
-              color: Theme.of(context).cardColor,
-              elevation: _kCardElevation,
-              clipBehavior: Clip.antiAlias,
-              margin: EdgeInsets.fromLTRB(_kCardElevation, 0, _kCardElevation, 0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(3), bottom: Radius.zero),
-              ),
-              child: _builder(
-                context,
-                _arguments,
-                _EmbeddedConfiguration(controller),
-              ),
+    return DraggableScrollableSheet(
+      initialChildSize: minHeight,
+      minChildSize: minHeight,
+      maxChildSize: 1,
+      expand: false,
+      builder: (context, controller) {
+        // Using MouseRegion is a workaround for [59741](https://github.com/flutter/flutter/issues/59741). Pointer events not intercepted by visible regions.
+        return MouseRegion(
+          child: Card(
+            color: context.theme().cardColor,
+            elevation: _kCardElevation,
+            clipBehavior: Clip.antiAlias,
+            margin: EdgeInsets.fromLTRB(_kCardElevation, 0, _kCardElevation, 0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(3), bottom: Radius.zero),
             ),
-          );
-        },
-      ),
+            child: _builder(context, _arguments, _EmbeddedConfiguration(controller)),
+          ),
+        );
+      },
     );
   }
 }

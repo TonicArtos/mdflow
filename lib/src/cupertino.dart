@@ -8,7 +8,7 @@
 
 library cupertino_mdflow;
 
-import 'package:animations/animations.dart';
+import 'package:contextx/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mdflow/src/common/common.dart';
@@ -16,7 +16,5 @@ import 'package:mdflow/src/common/layout_mode.dart';
 import 'package:mdflow/src/common/responsive.dart';
 
 part 'cupertino/common.dart';
-
 part 'cupertino/flow.dart';
-
 part 'cupertino/scaffold.dart';

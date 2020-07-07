@@ -40,40 +40,17 @@ class CupertinoMasterDetailScaffold extends StatelessWidget {
     );
   }
 
-  final Animatable<double> _kOpacityTween = Tween<double>(
-    begin: 1,
-    end: 0,
-  );
-
   Widget _buildDetailView(BuildContext context) {
     return Expanded(
       child: ValueListenableBuilder(
         valueListenable: _detailArgument,
-        builder: (context, value, child) => PageTransitionSwitcher(
-          transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-            final Animation<double> opacityAnimation = CurvedAnimation(
-              parent: secondaryAnimation,
-              curve: Curves.linearToEaseOut,
-              reverseCurve: Curves.easeInToLinear,
-            ).drive(_kOpacityTween);
-            return FadeTransition(
-              opacity: opacityAnimation,
-              child: CupertinoPageTransition(
-                child: child,
-                primaryRouteAnimation: primaryAnimation,
-                secondaryRouteAnimation: secondaryAnimation,
-                linearTransition: false,
-              ),
-            );
-          },
-          child: Container(
-            key: ValueKey(value ?? _initialArguments ?? _defaultRequest.value),
-            constraints: BoxConstraints.expand(),
-            child: _detailPageBuilder(
-              context,
-              value ?? _initialArguments ?? _defaultRequest.value,
-              _EmbeddedConfiguration(),
-            ),
+        builder: (context, value, child) => Container(
+          key: ValueKey(value ?? _initialArguments ?? _defaultRequest.value),
+          constraints: BoxConstraints.expand(),
+          child: _detailPageBuilder(
+            context,
+            value ?? _initialArguments ?? _defaultRequest.value,
+            _EmbeddedConfiguration(),
           ),
         ),
       ),

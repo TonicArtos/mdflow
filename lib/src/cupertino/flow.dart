@@ -8,18 +8,19 @@
 
 part of cupertino_mdflow;
 
-/// A Master Detail Flow widget. Depending on screen width it builds either a lateral or nested
-/// navigation flow between a master view and a detail page.
+/// A Master Detail Flow widget. Depending on screen width it builds either a
+/// lateral or nested navigation flow between a master view and a detail page.
 ///
-/// If focus is on detail view, then switching to nested
-/// navigation will populate the navigation history with the master page and the detail page on
-/// top. Otherwise the focus is on the master view and just the master page is shown.
+/// If focus is on detail view, then switching to nested navigation will
+/// populate the navigation history with the master page and the detail page on
+/// top. Otherwise the focus is on the master view and just the master page is
+/// shown.
 class CupertinoMasterDetailFlow extends StatefulWidget {
   static const String navMaster = 'master';
   static const String navDetail = 'detail';
 
-  /// Creates a master detail navigation flow which is either nested or lateral depending on
-  /// screen width.
+  /// Creates a master detail navigation flow which is either nested or lateral
+  /// depending on screen width.
   CupertinoMasterDetailFlow({
     Key key,
     @required this.detailPageBuilder,
@@ -48,8 +49,8 @@ class CupertinoMasterDetailFlow extends StatefulWidget {
 }
 
 class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
-  /// Tracks whether focus is on the detail or master views. Determines behaviour when switching
-  /// from lateral to nested navigation.
+  /// Tracks whether focus is on the detail or master views. Determines
+  /// behaviour when switching from lateral to nested navigation.
   _Focus focus = _Focus.master;
   Object _cachedDetailArguments;
 
@@ -80,7 +81,8 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
               CupertinoPageRoute(
                 builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                   if (!isDefault) {
-                    Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
+                    c.navigator().pushNamed(CupertinoMasterDetailFlow.navDetail,
+                        arguments: v);
                   }
                 }),
               ),
@@ -90,7 +92,8 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
               CupertinoPageRoute(
                 builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                   if (!isDefault) {
-                    Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
+                    c.navigator().pushNamed(
+                        CupertinoMasterDetailFlow.navDetail, arguments: v);
                   }
                 }),
               ),
@@ -102,14 +105,14 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
                     _NestedConfiguration(
                       onBack: () {
                         focus = _Focus.master;
-                        Navigator.of(c).pop();
+                        c.navigator().pop();
                       },
                     ),
                   ),
                   onWillPop: () async {
                     // No need for setState() as rebuild happens on navigation pop.
                     focus = _Focus.master;
-                    Navigator.of(c).pop();
+                    c.navigator().pop();
                     return false;
                   },
                 ),
@@ -125,7 +128,8 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
             return CupertinoPageRoute(
               builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                 if (!isDefault) {
-                  Navigator.of(c).pushNamed(CupertinoMasterDetailFlow.navDetail, arguments: v);
+                  c.navigator().pushNamed(
+                      CupertinoMasterDetailFlow.navDetail, arguments: v);
                 }
               }),
             );
@@ -142,14 +146,14 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
                   _NestedConfiguration(
                     onBack: () {
                       focus = _Focus.master;
-                      Navigator.of(c).pop();
+                      c.navigator().pop();
                     },
                   ),
                 ),
                 onWillPop: () async {
                   // No need for setState() as rebuild happens on navigation pop.
                   focus = _Focus.master;
-                  Navigator.of(c).pop();
+                  c.navigator().pop();
                   return false;
                 },
               ),

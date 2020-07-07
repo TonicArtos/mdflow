@@ -27,13 +27,12 @@ class MdFlowConfiguration {
       );
 }
 
-/// A Master Detail Flow widget. Depending on screen width it builds either a lateral or nested
-/// navigation flow between a master view and a detail page.
-/// bloc pattern.
+/// A Master Detail Flow widget. Depending on screen width it builds either a
+/// lateral or nested navigation flow between a master view and a detail page.
 ///
-/// If focus is on detail view, then switching to nested
-/// navigation will populate the navigation history with the master page and the detail page on
-/// top. Otherwise the focus is on the master view and just the master page is shown.
+/// If focus is on detail view, then switching to nested navigation will populate
+/// the navigation history with the master page and the detail page on top.
+/// Otherwise the focus is on the master view and just the master page is shown.
 class MasterDetailFlow extends StatefulWidget {
   static const String navMaster = 'master';
   static const String navDetail = 'detail';
@@ -65,24 +64,27 @@ class MasterDetailFlow extends StatefulWidget {
 
   /// Builder for the master view for lateral navigation.
   ///
-  /// If [masterPageBuilder] is not supplied the master page required for nested navigation, also
-  /// builds the master view inside a [Scaffold] with an [AppBar].
+  /// If [masterPageBuilder] is not supplied the master page required for nested
+  /// navigation, also / builds the master view inside a [Scaffold] with an
+  /// [AppBar].
   final MasterViewBuilder masterViewBuilder;
 
   /// Builder for the master page for nested navigation.
   ///
-  /// This builder is usually a wrapper around the [masterViewBuilder] builder to provide the
-  /// extra UI required to make a page. However, this builder is optional, and the master page
-  /// can be built using the master view builder and the configuration for the lateral UI's app bar.
+  /// This builder is usually a wrapper around the [masterViewBuilder] builder
+  /// to provide the extra UI required to make a page. However, this builder is
+  /// optional, and the master page can be built using the master view builder
+  /// and the configuration for the lateral UI's app bar.
   final MasterViewBuilder masterPageBuilder;
 
   /// Builder for the detail page.
   ///
-  /// [DetailViewConfiguration] is used to determine whether the detail page is in lateral or
-  /// nested navigation, and the UI built can change as needed. The lateral detail page is inside
-  /// a [DraggableScrollableSheet] and should have a scrollable element that uses the
-  /// [ScrollController] provided in the configuration argument. In fact, it is strongly
-  /// recommended the entire lateral page is scrollable.
+  /// [DetailViewConfiguration] is used to determine whether the detail page is
+  /// in lateral or nested navigation, and the UI built can change as needed.
+  /// The lateral detail page is inside a [DraggableScrollableSheet] and should
+  /// have a scrollable element that uses the [ScrollController] provided in the
+  /// configuration argument. In fact, it is strongly recommended the entire
+  /// lateral page is scrollable.
   final DetailPageBuilder detailPageBuilder;
 
   /// Override the width of the master view in the lateral UI.
@@ -94,8 +96,9 @@ class MasterDetailFlow extends StatefulWidget {
   /// Override the width of the gutter when there is no floating action button.
   final double detailPageFABlessGutterWidth;
 
-  /// Add a floating action button to the lateral UI. If no [masterPageBuilder] is supplied, this
-  /// floating action button is also used on the nested master page.
+  /// Add a floating action button to the lateral UI. If no [masterPageBuilder]
+  /// is supplied, this floating action button is also used on the nested
+  /// master page.
   ///
   /// See [Scaffold.floatingActionButton].
   final FloatingActionButton floatingActionButton;
@@ -110,13 +113,14 @@ class MasterDetailFlow extends StatefulWidget {
   /// See [AppBar.leading].
   final Widget leading;
 
-  /// Override the framework from determining whether to show a leading widget or not.
+  /// Override the framework from determining whether to show a leading widget
+  /// or not.
   ///
   /// See [AppBar.autoImplyLeading].
   final bool autoImplyLeading;
 
-  /// Override the framework from determining whether to display the title in the centre of the
-  /// app bar or not.
+  /// Override the framework from determining whether to display the title in
+  /// the centre of the app bar or not.
   ///
   /// See [AppBar.centerTitle].
   final bool centerTitle;
@@ -124,13 +128,14 @@ class MasterDetailFlow extends StatefulWidget {
   /// See [AppBar.flexibleSpace].
   final Widget flexibleSpace;
 
-  /// Build actions for the lateral UI, and potentially the master page in the nested UI.
+  /// Build actions for the lateral UI, and potentially the master page in the
+  /// nested UI.
   ///
-  /// If level is [ActionLevel.top] then the actions are for
-  /// the entire lateral UI page. If level is [ActionLevel.view] the actions are for the master
-  /// view toolbar. Finally, if the [AppBar] for the master page for the nested UI is being built
-  /// by [MasterDetailFlow], then [ActionLevel.composite] indicates the actions are for the
-  /// nested master page.
+  /// If level is [ActionLevel.top] then the actions are for the entire lateral
+  /// UI page. If level is [ActionLevel.view] the actions are for the master
+  /// view toolbar. Finally, if the [AppBar] for the master page for the nested
+  /// UI is being built by [MasterDetailFlow], then [ActionLevel.composite]
+  /// indicates the actions are for the nested master page.
   final ActionBuilder actionBuilder;
 
   /// Determine where the floating action button will go.
@@ -153,8 +158,8 @@ class MasterDetailFlow extends StatefulWidget {
 }
 
 class _MasterDetailFlowState extends State<MasterDetailFlow> {
-  /// Tracks whether focus is on the detail or master views. Determines behaviour when switching
-  /// from lateral to nested navigation.
+  /// Tracks whether focus is on the detail or master views. Determines
+  /// behaviour when switching from lateral to nested navigation.
   _Focus focus = _Focus.master;
   Object _cachedDetailArguments;
 
@@ -182,34 +187,27 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
         switch (focus) {
           case _Focus.master:
             return <Route>[
-              MaterialPageRoute(
-                builder:
-                    widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
-              ),
+              MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage),
             ];
           default:
             return <Route>[
-              MaterialPageRoute(
-                builder:
-                    widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
-              ),
-              MaterialPageRoute(
-                builder: (c) => WillPopScope(
-                  child: widget.detailPageBuilder(
-                    c,
+              MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage),
+              MaterialPageRoute(builder: (context) =>
+                  WillPopScope(
+                  child: widget.detailPageBuilder(context,
                     _cachedDetailArguments,
                     _NestedConfiguration(
                       icon: Icons.arrow_back,
                       onBack: () {
                         focus = _Focus.master;
-                        Navigator.of(c).pop();
+                        context.navigator().pop();
                       },
                     ),
                   ),
                   onWillPop: () async {
                     // No need for setState() as rebuild happens on navigation pop.
                     focus = _Focus.master;
-                    Navigator.of(c).pop();
+                    context.navigator().pop();
                     return false;
                   },
                 ),
@@ -222,32 +220,29 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
           case MasterDetailFlow.navMaster:
             // Matching state to navigation event.
             focus = _Focus.master;
-            return MaterialPageRoute(
-              builder:
-                  widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage,
-            );
+            return MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage);
           case MasterDetailFlow.navDetail:
             // Matching state to navigation event.
             focus = _Focus.detail;
             // Cache detail page settings.
             _cachedDetailArguments = settings.arguments;
             return MaterialPageRoute(
-              builder: (c) => WillPopScope(
+              builder: (context) => WillPopScope(
                 child: widget.detailPageBuilder(
-                  c,
+                  context,
                   _cachedDetailArguments,
                   _NestedConfiguration(
                     icon: Icons.arrow_back,
                     onBack: () {
                       focus = _Focus.master;
-                      Navigator.of(c).pop();
+                      context.navigator().pop();
                     },
                   ),
                 ),
                 onWillPop: () async {
                   // No need for setState() as rebuild happens on navigation pop.
                   focus = _Focus.master;
-                  Navigator.of(c).pop();
+                  context.navigator().pop();
                   return false;
                 },
               ),
@@ -275,7 +270,10 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
         context,
         false,
         (v, {isDefault = false}) {
-          if (!isDefault) Navigator.of(context).pushNamed(MasterDetailFlow.navDetail, arguments: v);
+          if (!isDefault)
+            context
+                .navigator()
+                .pushNamed(MasterDetailFlow.navDetail, arguments: v);
         },
       ),
       floatingActionButton: widget.floatingActionButton,
@@ -301,8 +299,8 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
       floatingActionButtonLocation: widget.floatingActionButtonLocation,
       initialArguments: _cachedDetailArguments,
       leading: widget.leading,
-      masterViewBuilder: (c, isLateral, cb) => widget.masterViewBuilder(
-        c,
+      masterViewBuilder: (context, isLateral, cb) =>
+          widget.masterViewBuilder(context,
         isLateral,
         (v, {isDefault = false}) {
           /* Capture focus state and arguments for reuse on reflow to non-large display.*/

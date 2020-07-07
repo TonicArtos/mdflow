@@ -8,6 +8,7 @@
 
 library material_mdflow;
 
+import 'package:contextx/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:mdflow/src/common/common.dart';
@@ -16,11 +17,7 @@ import 'package:mdflow/src/common/layout_style.dart';
 import 'package:mdflow/src/common/responsive.dart';
 
 part 'material/common.dart';
-
 part 'material/detail_view.dart';
-
 part 'material/flow.dart';
-
 part 'material/scaffold.dart';
-
 part 'material/transition.dart';
