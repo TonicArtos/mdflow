@@ -79,23 +79,34 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
           case _Focus.master:
             return <Route>[
               CupertinoPageRoute(
-                builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
-                  if (!isDefault) {
-                    c.navigator().pushNamed(CupertinoMasterDetailFlow.navDetail,
-                        arguments: v);
-                  }
-                }),
+                builder: (c) => widget.masterPageBuilder(
+                  c,
+                  false,
+                  (v, {isDefault = false}) {
+                    if (!isDefault) {
+                      c.navigator().pushNamed(
+                          CupertinoMasterDetailFlow.navDetail,
+                          arguments: v);
+                    }
+                  },
+                ),
               ),
             ];
           default:
             return <Route>[
               CupertinoPageRoute(
-                builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
-                  if (!isDefault) {
-                    c.navigator().pushNamed(
-                        CupertinoMasterDetailFlow.navDetail, arguments: v);
-                  }
-                }),
+                builder: (c) => widget.masterPageBuilder(
+                  c,
+                  false,
+                  (v, {isDefault = false}) {
+                    if (!isDefault) {
+                      c.navigator().pushNamed(
+                            CupertinoMasterDetailFlow.navDetail,
+                            arguments: v,
+                          );
+                    }
+                  },
+                ),
               ),
               CupertinoPageRoute(
                 builder: (c) => WillPopScope(
@@ -126,10 +137,11 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
             // Matching state to navigation event.
             focus = _Focus.master;
             return CupertinoPageRoute(
-              builder: (c) => widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
+              builder: (c) =>
+                  widget.masterPageBuilder(c, false, (v, {isDefault = false}) {
                 if (!isDefault) {
-                  c.navigator().pushNamed(
-                      CupertinoMasterDetailFlow.navDetail, arguments: v);
+                  c.navigator().pushNamed(CupertinoMasterDetailFlow.navDetail,
+                      arguments: v);
                 }
               }),
             );
@@ -167,7 +179,8 @@ class _MasterDetailFlowState extends State<CupertinoMasterDetailFlow> {
 
   Widget buildLateralUI(BuildContext context) {
     return CupertinoMasterDetailScaffold(
-      detailPageBuilder: (context, arguments, config) => widget.detailPageBuilder(
+      detailPageBuilder: (context, arguments, config) =>
+          widget.detailPageBuilder(
         context,
         arguments != null ? arguments : _cachedDetailArguments,
         config,

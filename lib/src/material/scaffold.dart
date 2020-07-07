@@ -38,7 +38,8 @@ class MasterDetailScaffold extends StatelessWidget {
         _detailPageFABlessGutterWidth =
             detailPageFABlessGutterWidth ?? _kDetailPageFABlessGutterWidth,
         _floatingActionButton = floatingActionButton,
-        _detailPageFABGutterWidth = detailPageFABGutterWidth ?? _kDetailPageFABGutterWidth,
+        _detailPageFABGutterWidth =
+            detailPageFABGutterWidth ?? _kDetailPageFABGutterWidth,
         _floatingActionButtonLocation =
             floatingActionButtonLocation ?? FloatingActionButtonLocation.endTop,
         _initialArguments = initialArguments,
@@ -81,10 +82,10 @@ class MasterDetailScaffold extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   ConstrainedBox(
-                    constraints: BoxConstraints.tightFor(width: _masterViewWidth),
-                    child: IconTheme(data: context
-                        .theme()
-                        .primaryIconTheme,
+                    constraints:
+                        BoxConstraints.tightFor(width: _masterViewWidth),
+                    child: IconTheme(
+                      data: context.theme().primaryIconTheme,
                       child: ButtonBar(
                         children: _actionBuilder(context, ActionLevel.view),
                       ),
@@ -111,7 +112,10 @@ class MasterDetailScaffold extends StatelessWidget {
               builder: (context, value, child) {
                 return AnimatedSwitcher(
                   transitionBuilder: (child, animation) =>
-                      _FadeUpwardsPageTransition(child: child, animation: animation),
+                      _FadeUpwardsPageTransition(
+                    child: child,
+                    animation: animation,
+                  ),
                   duration: Duration(milliseconds: 500),
                   child: Container(
                     key: ValueKey(value ?? _initialArguments),
@@ -131,7 +135,8 @@ class MasterDetailScaffold extends StatelessWidget {
   }
 
   ConstrainedBox _buildMasterPanel(
-    BuildContext context, {bool needsScaffold = false,
+    BuildContext context, {
+    bool needsScaffold = false,
   }) {
     final masterView = _masterViewBuilder(
       context,

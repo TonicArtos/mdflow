@@ -9,9 +9,11 @@ part of material_mdflow;
 class _FadeUpwardsPageTransition extends StatelessWidget {
   _FadeUpwardsPageTransition({
     Key key,
-    @required Animation<double> animation, // The route's linear 0.0 - 1.0 animation.
+    // The route's linear 0.0 - 1.0 animation.
+    @required Animation<double> animation,
     @required this.child,
-  })  : _positionAnimation = animation.drive(_bottomUpTween.chain(_fastOutSlowInTween)),
+  })  : _positionAnimation =
+            animation.drive(_bottomUpTween.chain(_fastOutSlowInTween)),
         _opacityAnimation = animation.drive(_easeInTween),
         super(key: key);
 
@@ -20,8 +22,10 @@ class _FadeUpwardsPageTransition extends StatelessWidget {
     begin: const Offset(0.0, 0.25),
     end: Offset.zero,
   );
-  static final Animatable<double> _fastOutSlowInTween = CurveTween(curve: Curves.fastOutSlowIn);
-  static final Animatable<double> _easeInTween = CurveTween(curve: Curves.easeIn);
+  static final Animatable<double> _fastOutSlowInTween =
+      CurveTween(curve: Curves.fastOutSlowIn);
+  static final Animatable<double> _easeInTween =
+      CurveTween(curve: Curves.easeIn);
 
   final Animation<Offset> _positionAnimation;
   final Animation<double> _opacityAnimation;

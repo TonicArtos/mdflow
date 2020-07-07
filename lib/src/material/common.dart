@@ -7,6 +7,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 part of material_mdflow;
+
 typedef ActionBuilder = List<Widget> Function(
   BuildContext context,
   ActionLevel actionLevel,
@@ -26,10 +27,7 @@ class _NestedConfiguration extends DetailViewConfiguration {
   bool get implyLeading => true;
 
   @override
-  Widget get leading => IconButton(
-    icon: Icon(icon),
-    onPressed: onBack,
-  );
+  Widget get leading => IconButton(icon: Icon(icon), onPressed: onBack);
 }
 
 class _EmbeddedConfiguration extends DetailViewConfiguration {

@@ -187,14 +187,23 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
         switch (focus) {
           case _Focus.master:
             return <Route>[
-              MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage),
+              MaterialPageRoute(
+                builder: widget.masterPageBuilder != null
+                    ? widget.masterPageBuilder
+                    : _buildMasterPage,
+              ),
             ];
           default:
             return <Route>[
-              MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage),
-              MaterialPageRoute(builder: (context) =>
-                  WillPopScope(
-                  child: widget.detailPageBuilder(context,
+              MaterialPageRoute(
+                builder: widget.masterPageBuilder != null
+                    ? widget.masterPageBuilder
+                    : _buildMasterPage,
+              ),
+              MaterialPageRoute(
+                builder: (context) => WillPopScope(
+                  child: widget.detailPageBuilder(
+                    context,
                     _cachedDetailArguments,
                     _NestedConfiguration(
                       icon: Icons.arrow_back,
@@ -220,7 +229,11 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
           case MasterDetailFlow.navMaster:
             // Matching state to navigation event.
             focus = _Focus.master;
-            return MaterialPageRoute(builder: widget.masterPageBuilder != null ? widget.masterPageBuilder : _buildMasterPage);
+            return MaterialPageRoute(
+              builder: widget.masterPageBuilder != null
+                  ? widget.masterPageBuilder
+                  : _buildMasterPage,
+            );
           case MasterDetailFlow.navDetail:
             // Matching state to navigation event.
             focus = _Focus.detail;
@@ -288,7 +301,8 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
           : widget.actionBuilder,
       autoImplyLeading: widget.autoImplyLeading,
       centerTitle: widget.centerTitle,
-      detailPageBuilder: (context, arguments, config) => widget.detailPageBuilder(
+      detailPageBuilder: (context, arguments, config) =>
+          widget.detailPageBuilder(
         context,
         arguments != null ? arguments : _cachedDetailArguments,
         config,
@@ -299,8 +313,8 @@ class _MasterDetailFlowState extends State<MasterDetailFlow> {
       floatingActionButtonLocation: widget.floatingActionButtonLocation,
       initialArguments: _cachedDetailArguments,
       leading: widget.leading,
-      masterViewBuilder: (context, isLateral, cb) =>
-          widget.masterViewBuilder(context,
+      masterViewBuilder: (context, isLateral, cb) => widget.masterViewBuilder(
+        context,
         isLateral,
         (v, {isDefault = false}) {
           /* Capture focus state and arguments for reuse on reflow to non-large display.*/

@@ -44,7 +44,8 @@ class Responsive extends StatelessWidget {
         final availableWidth = constraints.maxWidth;
         if (large != null && availableWidth >= _breakpointForLargeDisplay) {
           return large(context);
-        } else if (medium != null && availableWidth >= _breakpointForMediumDisplay) {
+        } else if (medium != null &&
+            availableWidth >= _breakpointForMediumDisplay) {
           return medium(context);
         } else {
           return small(context);

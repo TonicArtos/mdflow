@@ -24,7 +24,8 @@ extension MdFlowLayoutModeStringer on LayoutMode {
 }
 
 class UnknownLayoutModeException {
-  UnknownLayoutModeException(Object v) : message = 'Unknown value: $v on LayoutMode';
+  UnknownLayoutModeException(Object v)
+      : message = 'Unknown value: $v on LayoutMode';
 
   final String message;
 

@@ -36,7 +36,8 @@ extension LayoutStyleStringer on LayoutStylePreference {
 }
 
 class UnknownLayoutStyleException {
-  UnknownLayoutStyleException(Object v) : message = 'Unknown value: $v on LayoutStyle';
+  UnknownLayoutStyleException(Object v)
+      : message = 'Unknown value: $v on LayoutStyle';
 
   final String message;
 
@@ -63,7 +64,9 @@ LayoutStyle styleChoice(
     // Cupertino icon selected based on platform preference.
     return LayoutStyle.cupertino;
   } else if (style == LayoutStylePreference.cupertinoPreferred &&
-      (isWeb || platform != TargetPlatform.android && platform != TargetPlatform.fuchsia)) {
+      (isWeb ||
+          platform != TargetPlatform.android &&
+              platform != TargetPlatform.fuchsia)) {
     // Cupertino icon selected to be preferred for non-Google platforms.
     return LayoutStyle.cupertino;
   } else {

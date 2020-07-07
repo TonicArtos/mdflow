@@ -44,7 +44,11 @@ class _DetailView extends StatelessWidget {
               borderRadius: BorderRadius.vertical(
                   top: Radius.circular(3), bottom: Radius.zero),
             ),
-            child: _builder(context, _arguments, _EmbeddedConfiguration(controller)),
+            child: _builder(
+              context,
+              _arguments,
+              _EmbeddedConfiguration(controller),
+            ),
           ),
         );
       },
