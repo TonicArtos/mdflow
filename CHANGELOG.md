@@ -1,3 +1,7 @@
+## [0.1.2] - 2020/07/07.
+
+* Add analysis_options.
+
 ## [0.1.1] - 2020/07/07.
 
 * Fix formatting.

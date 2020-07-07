@@ -8,6 +8,7 @@
 
 part of material_mdflow;
 
+/// Configuration for the MdFlow Widget.
 class MdFlowConfiguration {
   const MdFlowConfiguration({
     this.mode = LayoutMode.auto,

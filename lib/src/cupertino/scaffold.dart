@@ -8,6 +8,8 @@
 
 part of cupertino_mdflow;
 
+/// A scaffold that uses a two panel layout to show a master view and a detail
+/// view.
 class CupertinoMasterDetailScaffold extends StatelessWidget {
   CupertinoMasterDetailScaffold({
     Key key,

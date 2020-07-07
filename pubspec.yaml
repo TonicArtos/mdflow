@@ -1,6 +1,6 @@
 name: mdflow
 description: A flutter package that provides an easy way to implement a reponsive master detail flow ui for mixed screen sizes.
-version: 0.1.1
+version: 0.1.2
 homepage: https://tonicartos.nz
 
 environment:

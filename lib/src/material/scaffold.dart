@@ -13,6 +13,8 @@ const double _kMasterViewWidth = 320;
 const double _kDetailPageFABlessGutterWidth = 40;
 const double _kDetailPageFABGutterWidth = 84;
 
+/// A scaffold that uses a two panel layout to show a master view and a detail
+/// view.
 class MasterDetailScaffold extends StatelessWidget {
   MasterDetailScaffold({
     Key key,
